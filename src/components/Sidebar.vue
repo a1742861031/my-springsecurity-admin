@@ -32,64 +32,92 @@
 </template>
 
 <script>
-import { computed, watch } from "vue";
-import { useStore } from "vuex";
-import { useRoute } from "vue-router";
-export default {
-    setup() {
-        const items = [
-            {
-                icon: "el-icon-lx-home",
-                index: "/dashboard",
-                title: "系统首页",
-            },
-            {
-                icon: "el-icon-lx-cascades",
-                index: "/table",
-                title: "基础表格",
-            },
-           
-            {
-                icon: "el-icon-lx-emoji",
-                index: "/icon",
-                title: "自定义图标",
-            },
-        ];
+    import {
+        computed,
+        watch
+    } from "vue";
+    import {
+        useStore
+    } from "vuex";
+    import {
+        useRoute
+    } from "vue-router";
+    export default {
+        setup() {
+            const items = [{
+                    icon: "el-icon-lx-home",
+                    index: "/dashboard",
+                    title: "系统首页",
+                },
+                {
+                    icon: "el-icon-lx-cascades",
+                    index: "/table",
+                    title: "基础表格",
+                },
+                {
+                    icon: "el-icon-lx-settings",
+                    index: "/system",
+                    title: "系统管理",
+                     subs: [{
+                            index: "/system/user",
+                            title: "用户管理",
+                        },
+                        {
+                            index: "/system/role",
+                            title: "角色管理",
+                        },
+                        {
+                            index: "/system/meue",
+                            title: "菜单管理",
+                        },
+                    ],
+                },
+                {
+                    icon: "el-icon-lx-emoji",
+                    index: "/icon",
+                    title: "自定义图标",
+                },
+              
+               
+            ];
 
-        const route = useRoute();
+            const route = useRoute();
 
-        const onRoutes = computed(() => {
-            return route.path;
-        });
+            const onRoutes = computed(() => {
+                return route.path;
+            });
 
-        const store = useStore();
-        const collapse = computed(() => store.state.collapse);
+            const store = useStore();
+            const collapse = computed(() => store.state.collapse);
 
-        return {
-            items,
-            onRoutes,
-            collapse,
-        };
-    },
-};
+            return {
+                items,
+                onRoutes,
+                collapse,
+            };
+        },
+    };
 </script>
 
 <style scoped>
-.sidebar {
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 70px;
-    bottom: 0;
-    overflow-y: scroll;
-}
-.sidebar::-webkit-scrollbar {
-    width: 0;
-}
-.sidebar-el-menu:not(.el-menu--collapse) {
-    width: 250px;
-}
-.sidebar > ul {
-    height: 100%;
-}
+    .sidebar {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 70px;
+        bottom: 0;
+        overflow-y: scroll;
+    }
+
+    .sidebar::-webkit-scrollbar {
+        width: 0;
+    }
+
+    .sidebar-el-menu:not(.el-menu--collapse) {
+        width: 250px;
+    }
+
+    .sidebar>ul {
+        height: 100%;
+    }
 </style>

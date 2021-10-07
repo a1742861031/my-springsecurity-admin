@@ -52,7 +52,14 @@ const routes = [
                     title: '没有权限'
                 },
                 component: () => import(/* webpackChunkName: "403" */ '../views/403.vue')
-            }
+            },{
+                path: "system/user",
+                name: "user",
+                meta: {
+                    title: '用户管理'
+                },
+                component: () => import( /* webpackChunkName: "icon" */ "../views/system/User.vue")
+            },
         ]
     }, {
         path: "/login",

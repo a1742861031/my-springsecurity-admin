@@ -15,7 +15,7 @@
                             <i class="el-icon-bell"></i>
                         </router-link>
                     </el-tooltip>
-                    <span class="btn-bell-badge" v-if="message"></span>
+                    <span class="btn-bell-badge" v-if="message"></span> 
                 </div>
                 <!-- 用户头像 -->
                 <div class="user-avator">

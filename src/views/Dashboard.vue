@@ -105,6 +105,7 @@
                     <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
                 </el-card>
             </el-col>
+
             <el-col :span="12">
                 <el-card shadow="hover">
                     <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
@@ -113,6 +114,7 @@
         </el-row>
     </div>
 </template>
+
 
 <script>
 import Schart from "vue-schart";
