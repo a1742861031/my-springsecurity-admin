@@ -1,5 +1,8 @@
 import axios from 'axios';
-
+import {
+    ElMessage,
+    ElMessageBox
+} from "element-plus";
 const service = axios.create({
     // process.env.NODE_ENV === 'development' 来判断是否开发环境
     // easy-mock服务挂了，暂时不使用了
@@ -19,10 +22,14 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
     response => {
-        if (response.status === 200) {
-            return response.data.data;
+        if (response.data.code === 200) {
+            return response.data;
         } else {
-            Promise.reject();
+            ElMessage({
+                message: response.data.msg,
+                type: 'error',
+            })
+            throw new Error("错误");
         }
     },
     error => {

@@ -10,14 +10,14 @@
     <div class="container">
       <div class="handle-box">
         <el-input v-model="searchUserInfo.userName" placeholder="用户名" class="handle-input mr10"></el-input>
-        <el-input v-model="searchUserInfo.nickName" placeholder="账号" class="handle-input mr10"></el-input>
+        <el-input v-model="searchUserInfo.nickName" placeholder="昵称" class="handle-input mr10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
       </div>
 
       <el-button type="success" class="addButton" icon="el-icon-roundaddfill" @click="handleAdd">新增用户</el-button>
       <el-table :data="pageInfo.list" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-        <el-table-column prop="userName" label="账号" width="80" align="center"></el-table-column>
-        <el-table-column prop="nickName" label="姓名"></el-table-column>
+        <el-table-column prop="userName" label="用户名" width="80" align="center"></el-table-column>
+        <el-table-column prop="nickName" label="昵称"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
 
         <el-table-column prop="email" label="邮箱"></el-table-column>
@@ -33,7 +33,7 @@
           <template #default="scope">
             <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row.userId)">编辑
             </el-button>
-            <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除
+            <el-button type="text" icon="el-icon-delete" class="red" @click="openDeleteDialog(scope.row.userId)">删除
             </el-button>
           </template>
         </el-table-column>
@@ -81,14 +81,7 @@
 </template>
 
 <script>
-  import {
-    ref,
-    reactive
-  } from "vue";
-  import {
-    ElMessage,
-    ElMessageBox
-  } from "element-plus";
+
   import user from "../../api/User";
   import role from '../../api/Role'
   export default {
@@ -127,20 +120,34 @@
       },
       getUserList() {
         user.getUserList(this.query, this.searchUserInfo).then((res) => {
-          this.pageInfo = res.data;
+          this.pageInfo = res.data.data;
         });
       },
       getRoleList() {
         role.getRoleList().then(res => {
-          this.roleList = res.roleList;
+          this.roleList = res.data.roleList;
         })
       },
       saveEditOrUpdate() {
-        if(this.title==="编辑用户")
-           this.updateUser();
-        else{
-          
+        if (this.title === "编辑用户")
+          this.updateUser();
+        else {
+          this.addUser();
         }
+      },
+      addUser() {
+        user.addUser(this.userInfo).then(res => {
+          this.$message.success("新增用户成功");
+          this.getUserList();
+          this.dialogVisible = false;
+        })
+      },
+      //删除用户
+      deleteUser(userId) {
+        user.deleteUser(userId).then(res => {
+          this.$message.success("删除用户成功");
+          this.getUserList();
+        })
       },
       handleSearch() {
         this.getUserList();
@@ -158,24 +165,37 @@
         this.title = "编辑用户"
         this.getUserInfo(id);
       },
-      handleAdd(){
+      handleAdd() {
         this.dialogVisible = true;
         this.title = "新增用户";
       },
       getUserInfo(userId) {
         user.getUserInfoById(userId).then(res => {
-          this.userInfo.status = res.item.status == 1 ? true : false;
-          this.userInfo = res.item;
+          this.userInfo.status = res.data.item.status == 1 ? true : false;
+          this.userInfo = res.data.item;
         })
       },
       getRole(roleId) {
         role.getRoleInfoById(roleId).then(res => {
-          this.userInfo.roleName = res.role.roleName;
-          console.log(this.userInfo);
+          this.userInfo.roleName = res.data.role.roleName;
         })
       },
-      handleClose(){
+      handleClose() {
         this.userInfo = {}
+      },
+      openDeleteDialog(userId) {
+        this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+            this.deleteUser(userId);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       }
     },
   };

@@ -18,13 +18,6 @@ const routes = [
                 },
                 component: () => import( /* webpackChunkName: "dashboard" */ "../views/Dashboard.vue")
             }, {
-                path: "/table",
-                name: "basetable",
-                meta: {
-                    title: '表格'
-                },
-                component: () => import( /* webpackChunkName: "table" */ "../views/BaseTable.vue")
-            }, {
                 path: "/icon",
                 name: "icon",
                 meta: {
@@ -52,7 +45,7 @@ const routes = [
                     title: '没有权限'
                 },
                 component: () => import(/* webpackChunkName: "403" */ '../views/403.vue')
-            },{
+            }, {
                 path: "system/user",
                 name: "user",
                 meta: {
@@ -60,6 +53,22 @@ const routes = [
                 },
                 component: () => import( /* webpackChunkName: "icon" */ "../views/system/User.vue")
             },
+            {
+                path: "system/role",
+                name: "role",
+                meta: {
+                    title: '角色管理'
+                },
+                component: () => import( /* webpackChunkName: "icon" */ "../views/system/Role.vue")
+            },
+            {
+                path: "system/menu",
+                name: "menu",
+                meta: {
+                    title: '菜单'
+                },
+                component: () => import( /* webpackChunkName: "icon" */ "../views/system/Menu.vue")
+            }
         ]
     }, {
         path: "/login",

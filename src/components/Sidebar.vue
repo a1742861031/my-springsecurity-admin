@@ -50,11 +50,6 @@
                     title: "系统首页",
                 },
                 {
-                    icon: "el-icon-lx-cascades",
-                    index: "/table",
-                    title: "基础表格",
-                },
-                {
                     icon: "el-icon-lx-settings",
                     index: "/system",
                     title: "系统管理",
@@ -67,9 +62,10 @@
                             title: "角色管理",
                         },
                         {
-                            index: "/system/meue",
+                            index: "/system/menu",
                             title: "菜单管理",
                         },
+
                     ],
                 },
                 {
@@ -77,8 +73,8 @@
                     index: "/icon",
                     title: "自定义图标",
                 },
-              
-               
+
+
             ];
 
             const route = useRoute();

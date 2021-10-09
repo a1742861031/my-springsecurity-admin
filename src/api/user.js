@@ -20,5 +20,21 @@ export default {
             method: 'put',
             data: user
         });
+    },
+    //新增用户
+    addUser(user) {
+        return request({
+            url: `/user`,
+            method: 'post',
+            data: user
+        });
+    },
+    //删除用户
+    deleteUser(id) {
+        return request({
+            url: `/user/${id}`,
+            method: 'delete',
+        });
     }
+  
 }
