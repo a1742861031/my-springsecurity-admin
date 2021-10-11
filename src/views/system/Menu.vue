@@ -8,12 +8,7 @@
       </el-breadcrumb>
     </div>
     <div class="container">
-      <div class="handle-box">
-        <el-input placeholder="菜单名" class="handle-input mr10"></el-input>
-        <el-button type="primary" icon="el-icon-search">搜索</el-button>
-      </div>
-      <el-button type="success" class="addButton" icon="el-icon-roundaddfill">新增菜单
-      </el-button>
+
 
       <el-table :data="oneLevelMenu" style="width: 100%" row-key="menuId" border lazy :load="loadNextLevelMenu"
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
@@ -21,11 +16,11 @@
         </el-table-column>
         <el-table-column prop="icon" label="图标" width="180">
         </el-table-column>
-        <el-table-column  label="类型">
+        <el-table-column label="类型">
           <template #default="scope">
             <el-tag v-if="scope.row.type === 0" type="success">目录</el-tag>
-            <el-tag v-else-if="scope.row.type ===1"  type="warning">菜单</el-tag>
-            <el-tag v-else-if="scope.row.type ===2"  type="info">按钮</el-tag>
+            <el-tag v-else-if="scope.row.type ===1" type="warning">菜单</el-tag>
+            <el-tag v-else-if="scope.row.type ===2" type="info">按钮</el-tag>
 
           </template>
         </el-table-column>
@@ -49,6 +44,74 @@
         </el-table-column>
       </el-table>
     </div>
+    <!-- 添加角色对话框开始 -->
+    <el-dialog title="添加菜单" v-model="addDialogVisible" width="30%">
+      <el-form label-width="70px">
+        <el-form-item label="菜单名">
+          <el-input v-model="addForm.menuName"></el-input>
+        </el-form-item>
+        <el-form-item label="路径">
+          <el-input v-model="addForm.url"></el-input>
+        </el-form-item>
+        <el-form-item label="权限标识">
+          <el-input v-model="addForm.permission"></el-input>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-input v-model="addForm.sort"></el-input>
+        </el-form-item>
+        <el-form-item label="类型">
+          <el-radio v-model="addForm.type" :label=0>目录</el-radio>
+          <el-radio v-model="addForm.type" :label=1>菜单</el-radio>
+          <el-radio v-model="addForm.type" :label=2>按钮</el-radio>
+        </el-form-item>
+        <el-form-item label="父级菜单">
+          <el-cascader :options="oneLevelMenu" v-model="selectedParentMenu"
+            :props="{ multiple: false, checkStrictly: true ,value:'menuId',label:'menuName',lazy:true,lazyLoad:lazyLoadNextLevel}">
+          </el-cascader>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="addDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveAdd">确 定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    <!-- 添加角色对话框结束 -->
+    <!-- 修改角色对话框开始 -->
+    <el-dialog title="编辑菜单" v-model="editDialogVisible" width="30%">
+      <el-form label-width="70px">
+        <el-form-item label="菜单名">
+          <el-input v-model="editForm.menuName"></el-input>
+        </el-form-item>
+        <el-form-item label="路径">
+          <el-input v-model="editForm.url"></el-input>
+        </el-form-item>
+        <el-form-item label="权限标识">
+          <el-input v-model="editForm.permission"></el-input>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-input v-model="editForm.sort"></el-input>
+        </el-form-item>
+        <el-form-item label="类型">
+          <el-radio v-model="editForm.type" :label=0>目录</el-radio>
+          <el-radio v-model="editForm.type" :label=1>菜单</el-radio>
+          <el-radio v-model="editForm.type" :label=2>按钮</el-radio>
+        </el-form-item>
+        <el-form-item label="父级菜单">
+          <el-cascader :options="oneLevelMenu" v-model="editForm.parentId"
+            :props="{ multiple: false, checkStrictly: true ,value:'menuId',label:'menuName',lazy:true,lazyLoad:lazyLoadNextLevel}">
+          </el-cascader>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="editDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveEdit">确 定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    <!-- 修改角色对话框结束 -->
   </div>
 </template>
 
@@ -58,13 +121,16 @@
 
     data() {
       return {
-        oneLevelMenu: []
+        oneLevelMenu: [],
+        addDialogVisible: false,
+        addForm: {},
+        selectedParentMenu: [],
+        editForm: {},
+        editDialogVisible: false
       };
     },
 
-    mounted() {
 
-    },
     created() {
       this.getOneLevelMenu();
     },
@@ -77,7 +143,6 @@
         })
       },
       loadNextLevelMenu(tree, treeNode, resolve) {
-        console.log(tree.type == 0);
         let level;
         if (tree.type == 0) {
           level = 2
@@ -85,10 +150,59 @@
           level = 3
         }
         menu.getMenuLevelTwoOrThree(tree.menuId, level).then(res => {
-          console.log(res.data.result);
           resolve(res.data.result)
         })
+      },
+      lazyLoadNextLevel(node, resolve) {
+        menu.getMenuLevelTwoOrThree(node.value, 2).then(res => {
+          resolve(res.data.result)
+        })
+      },
+      handleEdit(menuId) {
+        menu.getMenuInfoById(menuId).then(res => {
+          this.editForm = res.data.menu;
+          this.editDialogVisible = true;
+          this.getOneLevelMenu();
+        })
+      },
+      saveAdd() {
+        this.addForm.parentId = this.selectedParentMenu.pop();
+        menu.addMenu(this.addForm).then(res => {
+          this.$message.success("新增菜单成功");
+          this.addDialogVisible = false;
+          this.getOneLevelMenu();
+        })
+      },
 
+      saveEdit() {
+        if (this.editForm.parentId) {
+          this.editForm.parentId = this.editForm.parentId.pop();
+        }
+        menu.updateMenu(this.editForm).then(res => {
+          this.$message.success("修改成功");
+          this.editDialogVisible = false;
+          this.getOneLevelMenu();
+        })
+      },
+      deleteMenu(menuId) {
+        menu.deleteMenu(menuId).then(res => {
+          this.$message.success("删除角色信息成功");
+          this.getMenuLevelOne();
+        })
+      },
+      openDeleteDialog(menuId) {
+        this.$confirm('此操作将永久删除该菜单及该菜单下的元素?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.deleteMenu(menuId);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       }
     },
   };

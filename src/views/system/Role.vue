@@ -149,6 +149,9 @@
       },
       saveEdit() {
         this.editForm.menuIds = this.$refs.editTree.getCheckedKeys();
+        this.$refs.editTree.getHalfCheckedKeys().forEach(item => {
+          this.editForm.menuIds.push(item);
+        })
         role.editRole(this.editForm).then(res => {
           this.$message.success("修改角色成功");
           this.getRoleList();
