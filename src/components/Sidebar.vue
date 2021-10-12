@@ -3,19 +3,19 @@
         <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
             <template v-for="item in items">
-                <template v-if="item.subs">
-                    <el-submenu :index="item.index" :key="item.index">
+                <template v-if="item.children">
+                    <el-submenu :index="item.id" :key="item.id">
                         <template #title>
                             <i :class="item.icon"></i>
                             <span>{{ item.title }}</span>
                         </template>
-                        <template v-for="subItem in item.subs">
-                            <el-submenu v-if="subItem.subs" :index="subItem.index" :key="subItem.index">
+                        <template v-for="subItem in item.children">
+                            <el-submenu v-if="subItem.subs" :index="subItem.herf" :key="subItem.id">
                                 <template #title>{{ subItem.title }}</template>
-                                <el-menu-item v-for="(threeItem, i) in subItem.subs" :key="i" :index="threeItem.index">
+                                <el-menu-item v-for="(threeItem, i) in subItem.children" :key="i" :index="threeItem.href">
                                     {{ threeItem.title }}</el-menu-item>
                             </el-submenu>
-                            <el-menu-item v-else :index="subItem.index" :key="subItem.index">{{ subItem.title }}
+                            <el-menu-item v-else :index="subItem.href" :key="subItem.id">{{ subItem.title }}
                             </el-menu-item>
                         </template>
                     </el-submenu>
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+    import menu from '../api/menu'
+
     import {
         computed,
         watch
@@ -43,42 +45,26 @@
         useRoute
     } from "vue-router";
     export default {
+        data() {
+            return {
+                items: {},
+            };
+        },
+        created() {
+            this.getMenus();
+        },
+
+        methods: {
+            getMenus() {
+                menu.getMenu().then(res=>{
+                    console.log(res.data);
+                    this.items = res.data.menus
+                })
+            },
+        },
+
         setup() {
-            const items = [{
-                    icon: "el-icon-lx-home",
-                    index: "/dashboard",
-                    title: "系统首页",
-                },
-                {
-                    icon: "el-icon-lx-settings",
-                    index: "/system",
-                    title: "系统管理",
-                     subs: [{
-                            index: "/system/user",
-                            title: "用户管理",
-                        },
-                        {
-                            index: "/system/role",
-                            title: "角色管理",
-                        },
-                        {
-                            index: "/system/menu",
-                            title: "菜单管理",
-                        },
-
-                    ],
-                },
-                {
-                    icon: "el-icon-lx-emoji",
-                    index: "/icon",
-                    title: "自定义图标",
-                },
-
-
-            ];
-
             const route = useRoute();
-
             const onRoutes = computed(() => {
                 return route.path;
             });
@@ -87,7 +73,6 @@
             const collapse = computed(() => store.state.collapse);
 
             return {
-                items,
                 onRoutes,
                 collapse,
             };

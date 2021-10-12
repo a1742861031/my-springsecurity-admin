@@ -49,5 +49,12 @@ export default {
             url: `/menu/${menuId}`,
             method: 'delete',
         });
+    },
+    //获取菜单列表
+    getMenu(){
+        return request({
+            url: `/index`,
+            method: 'get',
+        });
     }
 }
